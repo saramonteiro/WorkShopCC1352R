@@ -1,0 +1,30 @@
+// Ative o ADC
+adcEnableSync(ADC_REF_FIXED, ADC_SAMPLE_TIME_2P7_US, ADC_TRIGGER_MANUAL);
+
+// Gera um trigger manual para obter a leitura e le da memoria que o ADC armazenou
+adcGenManualTrigger();
+adcReadFifo(output.ValorADC);
+
+// Desabilite o ADC
+adcDisable();
+
+//Inicializa o estado anterior
+U16 EstadoAnterior = state.FlagHIGH;
+
+//Se o valor do ADC for maior que o threshold
+if (output.ValorADC > cfg.threshold){
+    state.FlagHIGH = 1; //Atualiza a flag indicadora
+    gpioClearOutput(AUXIO_O_LED_VERDE); //Apaga o LED verde
+} else{
+    state.FlagHIGH = 0; //Atualiza a flag indicadora
+    gpioSetOutput(AUXIO_O_LED_VERDE);// Acende o LED
+}
+
+//Se o estado anterior for diferente do estado atual
+if (EstadoAnterior != state.FlagHIGH){
+    //Sinalize ao processador da aplicacao central atraves de uma interrupcao
+    fwGenAlertInterrupt();
+}
+
+//Agende a proxima execucao para o periodo de 1 "tick" de RTC
+fwScheduleTask(1);
