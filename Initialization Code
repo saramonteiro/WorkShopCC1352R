@@ -1,0 +1,11 @@
+// Pino DIO28 - AUXIO_O_HIGH com Vcc
+gpioSetOutput(AUXIO_O_HIGH);
+
+// Pino DIO30 - AUXIO_O_LOW com GND
+gpioClearOutput(AUXIO_O_LOW);
+
+// Selecione a entrada na qual o ADC vai atuar para converter
+adcSelectGpioInput(AUXIO_A_ADC_ENTRADA);
+
+// Agende a primeira execucao
+fwScheduleTask(1);
